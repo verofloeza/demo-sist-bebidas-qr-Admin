@@ -13,11 +13,11 @@ const ProductsQr = ({id, image, title, qty, discount, status, total, collection}
     <tr>
         
         <td><img className='files-gallery-item img-fluid' alt="img" src={image} width={50} /></td>
-        <td>{title}</td>
-        <td>{total}</td>
-        <td>{cant}</td>
-        <td>{collection}</td>
-        <td>
+        <td style={{color: 'black'}}>{title}</td>
+        <td style={{color: 'black'}}>{total}</td>
+        <td style={{color: 'black'}}>{cant}</td>
+        <td style={{color: 'black'}}>{collection}</td>
+        <td style={{color: 'black'}}>
         {
             status === 1 || status === 2
             ? status === 1
@@ -37,7 +37,7 @@ const ProductsQr = ({id, image, title, qty, discount, status, total, collection}
               </div>
           }
         </td>
-        <th scope="row">{id}</th>
+        <th scope="row" style={{color: 'black'}}>{id}</th>
     </tr>
   )
 }

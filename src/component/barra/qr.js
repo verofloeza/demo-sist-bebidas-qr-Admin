@@ -104,13 +104,13 @@ const Qr = () => {
                 <Table>
                   <thead>
                     <tr>
-                      <th scope="col">Imagen</th>
-                      <th scope="col">Bebida</th>
-                      <th scope="col">Abono</th>
-                      <th scope="col">Cantidad</th>
-                      <th scope="col">Nro Mercado Pago</th>
-                      <th scope="col">Estado</th>
-                      <th scope="col"># Orden</th>
+                      <th scope="col" style={{color: 'black'}}>Imagen</th>
+                      <th scope="col" style={{color: 'black'}}>Bebida</th>
+                      <th scope="col" style={{color: 'black'}}>Abono</th>
+                      <th scope="col" style={{color: 'black'}}>Cantidad</th>
+                      <th scope="col" style={{color: 'black'}}>Nro Mercado Pago</th>
+                      <th scope="col" style={{color: 'black'}}>Estado</th>
+                      <th scope="col" style={{color: 'black'}}># Orden</th>
                     </tr>
                   </thead>
                   <tbody>
