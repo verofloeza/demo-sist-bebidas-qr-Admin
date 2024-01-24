@@ -52,14 +52,14 @@ const OrdenesBebidas = () => {
   }
   const enviar = (qr, email) =>{
     Displayalert()
-    // fetch('https://clubmasiva.com.ar/sistema/mails/enviarCorreo.php?qr=' + encodeURIComponent(qr) + '&email='+ email)
-    //         .then(() =>{
-    //             Displayalert()
-    //             console.log('correo enviado')
-    //         })
-    //         .catch(error => {
-    //           console.error('Error al obtener la imagen del código QR:', error);
-    //         });
+    fetch('https://fusionapps.com.ar/SistBeb/mail/enviarCorreo.php?qr=' + encodeURIComponent(qr) + '&email='+ email)
+            .then(() =>{
+                Displayalert()
+                console.log('correo enviado')
+            })
+            .catch(error => {
+              console.error('Error al obtener la imagen del código QR:', error);
+            });
   }
 
   const Displayalert = () => {

@@ -6,7 +6,7 @@ import { QRCodeCanvas } from "qrcode.react"
 import { db } from '../../data/firebase/firebase';
 
 const GenerateQr = ({email}) => {
-    const [url, setUrl] = useState(`https://club-masiva-emp.vercel.app/qr/JR-Recital/${email}`);
+    const [url, setUrl] = useState(`https://demo-sist-bebidas-qr-admin.vercel.app/qr/Evento1/${email}`);
     const qrRef = useRef();
 
     useEffect(() =>{
