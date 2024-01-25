@@ -43,7 +43,7 @@ const Qr = () => {
             const storage = getStorage();
 
             // Especifica la ruta de la imagen en el almacenamiento
-            const imagePath = `qr/JR-Recital/${email}.png`;
+            const imagePath = `qr/Evento1/${email}.png`;
 
             // Crea una referencia a la imagen en el almacenamiento
             const imageRef = ref(storage, imagePath);

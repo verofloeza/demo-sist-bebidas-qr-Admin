@@ -5,14 +5,23 @@ import { collection, doc, getDocs, query, updateDoc } from 'firebase/firestore';
 import Breadcrumbs from '../common/breadcrumb/breadcrumb';
 import SweetAlert from "sweetalert2";
 import { db } from '../../data/firebase/firebase';
+import { useDispatch } from 'react-redux';
+import ModalEventos from '../common/modal/modalEventos';
 
 const Eventos = () => {
+  const dispatch = useDispatch();
+  const [modal, setModal] = useState(false);
   const [ evento, setEvento ] = useState([]);
 
   useEffect(() =>{
    
     getEventos()
   }, [])
+
+  const toggle = (evento) => {
+    setModal(!modal);
+    setEvento(evento)
+  }
 
   const getEventos = async () => {
     const list = [];
@@ -81,7 +90,7 @@ const Eventos = () => {
         <Col sm="12">
           <Card>
             <CardHeader>
-              {/* <Button color="primary" onClick={() => toggle()}>Agregar Bebidas</Button> */}
+              <Button color="primary" onClick={() => toggle()}>Agregar Evento</Button>
             </CardHeader>
             <div className="table-responsive">
               <Table hover>
@@ -143,6 +152,7 @@ const Eventos = () => {
         </Col>
       </Row>
     </Container>
+    <ModalEventos modal={modal} toggle={toggle} evento={evento}></ModalEventos>
   </Fragment>
   )
 }
