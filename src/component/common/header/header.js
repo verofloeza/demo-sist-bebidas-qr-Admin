@@ -29,7 +29,8 @@ const Header = (props) => {
                   if (!querySnapshot.empty) {
                     const datos = querySnapshot.docs[0]
                     if(datos.data().role !== 'Admin' && datos.data().role !== 'Organizador'){
-                      Displayalert()
+                      Displayalert();
+                      await auth.signOut();
                       history(`./`);
                     } 
                     
@@ -64,6 +65,7 @@ const Header = (props) => {
         text: "No tiene permisos para operar",
         icon: "error",
       });
+      history(`./`);
     }
 
     const Navmenuhideandshow = () => {

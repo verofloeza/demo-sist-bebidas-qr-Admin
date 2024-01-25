@@ -1,6 +1,6 @@
 import { Button, CardBody, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "reactstrap";
 import React, { useState } from 'react'
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux/es/exports";
 
 import { db } from "../../../data/firebase/firebase";
@@ -11,9 +11,9 @@ import { usersList } from "../../../redux/actions/users.actions";
 const ModalEventos = ({modal, toggle, evento}) => {
   const dispatch = useDispatch();
   const [ event, setEvent ] = useState('');
+  const [ date, setDate ] = useState('');
   const [ active, setActive ] = useState('');
   const [ idCliente, setIdCliente ] = useState('');
-  const listEvents = useSelector(state => state.events.events);
 
   useEffect(()=>{
     if(evento){
@@ -24,15 +24,24 @@ const ModalEventos = ({modal, toggle, evento}) => {
     dispatch(getEvents())
   }, [evento])
 
+  const convertirFechaAFirebaseTimestamp = () => {
+    // Crea un nuevo objeto Date con la fecha y hora específicas
+    const fecha = new Date('September 21, 2024 00:00:00 GMT-0300');
+    
+    return fecha;
+  };
+
   const addUser = async () =>{
-    const userRef = doc(db, "events", email);
-    const user = {
-          event: event,
-          date: date,
-          isActive: true
-        };
+    const eventsCollection = collection(db, 'events');
+
+  const user = {
+    event: event,
+    date: convertirFechaAFirebaseTimestamp(date),
+    isActive: true
+  };
+
   try {
-    await setDoc(userRef, user);
+    await addDoc(eventsCollection, user);
     dispatch(usersList())
     setear()
     toggle()
@@ -43,10 +52,11 @@ const ModalEventos = ({modal, toggle, evento}) => {
 }
 
 const updateUser = async () =>{
-  const userRef = doc(db, "event", email);
+  console.log('update')
+  const userRef = doc(db, "event", idCliente);
   const user = {
         event: event,
-        date: new Date(),
+        date: convertirFechaAFirebaseTimestamp(date)
   };
   try {
     await updateDoc(userRef, user);
@@ -60,9 +70,9 @@ const updateUser = async () =>{
 }
 
   const setear = ()=>{
-    setDate('');
     setActive('');
     setIdCliente('');
+    setDate('');
     setEvent('');
   }
 
@@ -86,6 +96,20 @@ const updateUser = async () =>{
                       </FormGroup>
                     </Col>
                   </Row>
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <Label className="form-label">Fecha del evento</Label>
+                        <Input
+                          className="form-control input-air-primary"
+                          type="text"
+                          placeholder="Fecha del evento"
+                          value={date}
+                          onChange={(e)=> setDate(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
                 </CardBody>
               </Form>
       </ModalBody>
@@ -94,13 +118,13 @@ const updateUser = async () =>{
           Cerrar
         </Button>
         {
-          userId
+          idCliente
           ?
-          <Button color="secondary btn-pill" onClick={() => addUser()}>
+          <Button color="secondary btn-pill" onClick={() => updateUser()}>
             Guardar Cambios
           </Button>
           :
-          <Button color="secondary btn-pill" onClick={() => updateUser()}>
+          <Button color="secondary btn-pill" onClick={() => addUser()}>
             Guardar Cambios
           </Button>
         }

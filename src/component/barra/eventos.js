@@ -11,16 +11,16 @@ import ModalEventos from '../common/modal/modalEventos';
 const Eventos = () => {
   const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
-  const [ evento, setEvento ] = useState([]);
+  const [ eventos, setEventos ] = useState([]);
 
   useEffect(() =>{
    
     getEventos()
   }, [])
 
-  const toggle = (evento) => {
+  const toggle = (eventos) => {
     setModal(!modal);
-    setEvento(evento)
+    //setEventos(eventos)
   }
 
   const getEventos = async () => {
@@ -36,7 +36,7 @@ const Eventos = () => {
         });
       
     });
-    setEvento(list)
+    setEventos(list)
   }
 
   const deshabilitar = async (id) => {
@@ -104,8 +104,8 @@ const Eventos = () => {
                 </thead>
                 <tbody>
                   {
-                    evento.length > 0  
-                    ? evento.map((i) =>{
+                    eventos.length > 0  
+                    ? eventos.map((i) =>{
                           const date = i.date?.toDate?.();
                           const formattedDate = date ? date.toLocaleDateString() : '';
 
@@ -152,7 +152,7 @@ const Eventos = () => {
         </Col>
       </Row>
     </Container>
-    <ModalEventos modal={modal} toggle={toggle} evento={evento}></ModalEventos>
+    <ModalEventos modal={modal} toggle={toggle} evento={eventos}></ModalEventos>
   </Fragment>
   )
 }
