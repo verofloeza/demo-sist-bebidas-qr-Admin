@@ -1,12 +1,13 @@
 import { Button, CardBody, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "reactstrap";
 import React, { useState } from 'react'
-import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
-import { useDispatch, useSelector } from "react-redux/es/exports";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { useDispatch } from "react-redux/es/exports";
 
 import { db } from "../../../data/firebase/firebase";
 import { getEvents } from "../../../redux/actions/events.actions";
 import { useEffect } from "react";
 import { usersList } from "../../../redux/actions/users.actions";
+import { replace } from "lodash";
 
 const ModalEventos = ({modal, toggle, evento, getEvento}) => {
   const dispatch = useDispatch();
@@ -20,43 +21,58 @@ const ModalEventos = ({modal, toggle, evento, getEvento}) => {
       setEvent(evento.title)
       setActive(evento.active)
       setIdCliente(evento.id)
-      setDate(evento.date)
+      setDate(formatFirebaseTimestamp(evento.date))
+      console.log(formatFirebaseTimestamp(evento.date))
     }
     dispatch(getEvents())
   }, [evento])
 
+  const formatFirebaseTimestamp = (timestamp) => {
+    if(timestamp){
+      const dateObj = new Date(timestamp.seconds * 1000);
+      const year = dateObj.getFullYear();
+      const month = `0${dateObj.getMonth() + 1}`.slice(-2);
+      const day = `0${dateObj.getDate()}`.slice(-2);
+      const hours = `0${dateObj.getHours()}`.slice(-2);
+      const minutes = `0${dateObj.getMinutes()}`.slice(-2);
+      
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }else{
+      return '';
+    }
+    
+  };
+
   const addUser = async () =>{
     const eventsCollection = collection(db, 'events');
-
+    const slug = replace(' ', event);
   const user = {
     event: event,
-    date: parseFecha(date),
+    slug: slug,
+    date: new Date(date),
     isActive: true
   };
+  console.log(user)
 
   try {
     await addDoc(eventsCollection, user);
     dispatch(usersList())
     setear()
-    toggle()
+    toggle('')
     getEvento()
   } catch (e) {
     console.error("Error al agregar evento a Firestore:", e);
   }
     
-}
-
-const parseFecha = (fechaString) => {
-  const [dia, mes, anio] = fechaString.split('/');
-  // El mes en JavaScript es 0-indexado, por lo que restamos 1
-  return new Date(anio, mes - 1, dia);
-};
+  }
 
 const updateUser = async () =>{
   const userRef = doc(db, "events", idCliente);
+  const slug = replace(' ', event);
   const user = {
         event: event,
-        date: parseFecha(date)  
+        slug: slug,
+        date: new Date(date)  
   };
   try {
     await updateDoc(userRef, user);
@@ -80,12 +96,6 @@ const updateUser = async () =>{
   const close = () => {
     toggle('')
     getEvento()
-  }
-
-  const formatear = (fecha) => {
-    const date = fecha?.toDate?.();
-    const formattedDate = date ? date.toLocaleDateString() : '';
-    return formattedDate;
   }
 
   
@@ -112,15 +122,20 @@ const updateUser = async () =>{
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Label className="form-label">Fecha del evento</Label>
-                        <Input
-                          className="form-control input-air-primary"
-                          type="text"
-                          placeholder="Fecha del evento"
-                          value={formatear(date)}
-                          onChange={(e)=> setDate(e.target.value)}
-                        />
+                        <Label className="col-form-label">
+                          Fecha del evento
+                        </Label>
+                        <Col sm="9">
+                          <Input
+                            className="form-control digits"
+                            id="example-datetime-local-input"
+                            type="datetime-local"
+                            value={date}
+                            onChange={(e) => setDate(new Date(e.target.value).getTime())}
+                          />
+                        </Col>
                       </FormGroup>
+                      
                     </Col>
                   </Row>
                 </CardBody>

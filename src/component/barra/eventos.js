@@ -18,7 +18,8 @@ const Eventos = () => {
 
   const toggle = (eventos) => {
     setModal(!modal);
-    setEventos(eventos)
+    if(eventos) {setEventos(eventos)};
+    
   }
 
   const getEventos = async () => {
@@ -112,6 +113,21 @@ const Eventos = () => {
   
   }
 
+  const formatFirebaseTimestamp = (timestamp) => {
+    if(timestamp){
+      const dateObj = new Date(timestamp.seconds * 1000);
+      const year = dateObj.getFullYear();
+      const month = `0${dateObj.getMonth() + 1}`.slice(-2);
+      const day = `0${dateObj.getDate()}`.slice(-2);
+      const hours = `0${dateObj.getHours()}`.slice(-2);
+      const minutes = `0${dateObj.getMinutes()}`.slice(-2);
+      
+      return `${day}-${month}-${year} ${hours}:${minutes}`;
+    }else{
+      return '';
+    }
+  }
+
   return (
     <Fragment>
     <Breadcrumbs parent="Listado Bebidas" title="Listado de Eventos" />
@@ -138,12 +154,11 @@ const Eventos = () => {
                   {
                     eventos.length > 0  
                     ? eventos.map((i) =>{
-                          const date = i.date?.toDate?.();
-                          const formattedDate = date ? date.toLocaleDateString() : '';
+                          
 
                           return  (<tr>
                                       <td style={{color: 'black'}}>{i.title}</td>
-                                      <td style={{color: 'black'}}>{formattedDate}</td>
+                                      <td style={{color: 'black'}}>{formatFirebaseTimestamp(i.date)}</td>
                                       <td style={{color: 'black'}}> 
                                         {
                                           i.active === true 

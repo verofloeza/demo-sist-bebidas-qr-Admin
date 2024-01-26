@@ -77,6 +77,22 @@ const updateUser = async () =>{
     setEvento('');
   }
 
+  const formatFirebaseTimestamp = (timestamp) => {
+    if(timestamp){
+      const dateObj = new Date(timestamp.seconds * 1000);
+      const year = dateObj.getFullYear();
+      const month = `0${dateObj.getMonth() + 1}`.slice(-2);
+      const day = `0${dateObj.getDate()}`.slice(-2);
+      const hours = `0${dateObj.getHours()}`.slice(-2);
+      const minutes = `0${dateObj.getMinutes()}`.slice(-2);
+      
+      return `${day}-${month}-${year} ${hours}:${minutes}`;
+    }else{
+      return '';
+    }
+    
+  };
+
   return (
     <Modal isOpen={modal} toggle={toggle}>
       <ModalHeader toggle={toggle}>Usuarios</ModalHeader>
@@ -141,7 +157,7 @@ const updateUser = async () =>{
                           listEvents.length > 0 
                           
                             ? listEvents.map( (i, index) =>
-                              <option value={i.event} key={index}>{i.event}</option>
+                              <option value={i.event} key={index}>{i.event} - {formatFirebaseTimestamp(i.date)}</option>
                             )
                             : <option></option>
                           }

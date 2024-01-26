@@ -8,12 +8,14 @@ import ModalForms from "../common/modal/modalForms";
 import SweetAlert from "sweetalert2";
 import { db } from "../../data/firebase/firebase";
 import { usersList } from '../../redux/actions/users.actions';
+import { getEvents } from "../../redux/actions/events.actions";
 
 const Usuarios = () => {
   const dispatch = useDispatch();
   const users = useSelector(state => state.usuarios.usuarios);
   const [modal, setModal] = useState(false);
-  const [ userId, setUserId ] = useState('')
+  const [ userId, setUserId ] = useState('');
+  const listEvents = useSelector(state => state.events.events);
 
   // Variables para el paginador
   const itemsPerPage = 30; // Número de elementos por página
@@ -22,8 +24,23 @@ const Usuarios = () => {
 
   useEffect(()=>{
     dispatch(usersList())
-    
+    dispatch(getEvents())
   }, [])
+
+  const formatFirebaseTimestamp = (timestamp) => {
+    if(timestamp){
+      const dateObj = new Date(timestamp.seconds * 1000);
+      const year = dateObj.getFullYear();
+      const month = `0${dateObj.getMonth() + 1}`.slice(-2);
+      const day = `0${dateObj.getDate()}`.slice(-2);
+      const hours = `0${dateObj.getHours()}`.slice(-2);
+      const minutes = `0${dateObj.getMinutes()}`.slice(-2);
+      
+      return `${day}-${month}-${year} ${hours}:${minutes}`;
+    }else{
+      return '';
+    }
+  }
   
   const toggle = (usuario) => {
     setModal(!modal);
@@ -78,11 +95,21 @@ const Usuarios = () => {
       setCurrentPage(currentPage - 1);
     }
   };
-
+  
   // Calcular los índices de inicio y fin de los elementos en la página actual
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = currentPage * itemsPerPage;
 
+  const renderEventCells = (user) => {
+    if (user.event) {
+      const matchingEvents = listEvents.filter((event) => event.event === user.event);
+      return matchingEvents.map((event, index) => (
+        <td key={index} style={{ color: 'black' }}>{event.event} {formatFirebaseTimestamp(event.date)}</td>
+      ));
+    } else {
+      return <td style={{ color: 'black' }}></td>;
+    }
+  };
   return (
     <Fragment>
       <Breadcrumb parent="Organizadores" title="Listado de Organizadores" />
@@ -101,6 +128,7 @@ const Usuarios = () => {
                       <th scope="col" style={{color: 'black'}}>Nombre Organizador</th>
                       <th scope="col" style={{color: 'black'}}>Email</th>
                       <th scope="col" style={{color: 'black'}}>Rol</th>
+                      <th scope="col" style={{color: 'black'}}>Evento</th>
                       <th scope="col" style={{color: 'black'}}>Editar</th>
                       <th scope="col" style={{color: 'black'}}>Eliminar</th>
                     </tr>
@@ -117,6 +145,7 @@ const Usuarios = () => {
                           <td style={{color: 'black'}}>{i.name}</td>
                           <td style={{color: 'black'}}>{i.email}</td>
                           <td style={{color: 'black'}}>{i.role}</td>
+                          {renderEventCells(i)}
                           <td style={{color: 'black'}}> <i className={`fa fa-pencil`} onClick={() => toggle(i)}></i></td>
                           <td style={{color: 'black'}}> <i className={`fa fa-trash-o`} onClick={() => Displayalert(i.email)}></i></td>
                         </tr>
