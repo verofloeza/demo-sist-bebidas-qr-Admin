@@ -8,35 +8,29 @@ import { getEvents } from "../../../redux/actions/events.actions";
 import { useEffect } from "react";
 import { usersList } from "../../../redux/actions/users.actions";
 
-const ModalEventos = ({modal, toggle, evento}) => {
+const ModalEventos = ({modal, toggle, evento, getEvento}) => {
   const dispatch = useDispatch();
   const [ event, setEvent ] = useState('');
   const [ date, setDate ] = useState('');
   const [ active, setActive ] = useState('');
-  const [ idCliente, setIdCliente ] = useState('');
+  const [ idCliente, setIdCliente ] = useState(evento.id);
 
   useEffect(()=>{
     if(evento){
-      setEvent(evento.event)
+      setEvent(evento.title)
       setActive(evento.active)
       setIdCliente(evento.id)
+      setDate(evento.date)
     }
     dispatch(getEvents())
   }, [evento])
-
-  const convertirFechaAFirebaseTimestamp = () => {
-    // Crea un nuevo objeto Date con la fecha y hora específicas
-    const fecha = new Date('September 21, 2024 00:00:00 GMT-0300');
-    
-    return fecha;
-  };
 
   const addUser = async () =>{
     const eventsCollection = collection(db, 'events');
 
   const user = {
     event: event,
-    date: convertirFechaAFirebaseTimestamp(date),
+    date: parseFecha(date),
     isActive: true
   };
 
@@ -45,24 +39,31 @@ const ModalEventos = ({modal, toggle, evento}) => {
     dispatch(usersList())
     setear()
     toggle()
+    getEvento()
   } catch (e) {
     console.error("Error al agregar evento a Firestore:", e);
   }
     
 }
 
+const parseFecha = (fechaString) => {
+  const [dia, mes, anio] = fechaString.split('/');
+  // El mes en JavaScript es 0-indexado, por lo que restamos 1
+  return new Date(anio, mes - 1, dia);
+};
+
 const updateUser = async () =>{
-  console.log('update')
-  const userRef = doc(db, "event", idCliente);
+  const userRef = doc(db, "events", idCliente);
   const user = {
         event: event,
-        date: convertirFechaAFirebaseTimestamp(date)
+        date: parseFecha(date)  
   };
   try {
     await updateDoc(userRef, user);
     dispatch(usersList())
     setear()
-    toggle()
+    toggle('')
+    getEvento()
   } catch (e) {
     console.error("Error al agregar evento a Firestore:", e);
   }
@@ -76,6 +77,18 @@ const updateUser = async () =>{
     setEvent('');
   }
 
+  const close = () => {
+    toggle('')
+    getEvento()
+  }
+
+  const formatear = (fecha) => {
+    const date = fecha?.toDate?.();
+    const formattedDate = date ? date.toLocaleDateString() : '';
+    return formattedDate;
+  }
+
+  
   return (
     <Modal isOpen={modal} toggle={toggle}>
       <ModalHeader toggle={toggle}>Usuarios</ModalHeader>
@@ -104,7 +117,7 @@ const updateUser = async () =>{
                           className="form-control input-air-primary"
                           type="text"
                           placeholder="Fecha del evento"
-                          value={date}
+                          value={formatear(date)}
                           onChange={(e)=> setDate(e.target.value)}
                         />
                       </FormGroup>
@@ -114,7 +127,7 @@ const updateUser = async () =>{
               </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary btn-pill" onClick={toggle}>
+        <Button color="primary btn-pill" onClick={() => close()}>
           Cerrar
         </Button>
         {

@@ -5,11 +5,9 @@ import { collection, doc, getDocs, query, updateDoc } from 'firebase/firestore';
 import Breadcrumbs from '../common/breadcrumb/breadcrumb';
 import SweetAlert from "sweetalert2";
 import { db } from '../../data/firebase/firebase';
-import { useDispatch } from 'react-redux';
 import ModalEventos from '../common/modal/modalEventos';
 
 const Eventos = () => {
-  const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
   const [ eventos, setEventos ] = useState([]);
 
@@ -20,7 +18,7 @@ const Eventos = () => {
 
   const toggle = (eventos) => {
     setModal(!modal);
-    //setEventos(eventos)
+    setEventos(eventos)
   }
 
   const getEventos = async () => {
@@ -59,7 +57,7 @@ const Eventos = () => {
     };
     try {
       await updateDoc(userRef, user);
-      getEventos()
+      await getEventos()
     } catch (e) {
       console.error("Error al camnbiar el estado a Firestore:", e);
     }
@@ -82,6 +80,38 @@ const Eventos = () => {
     habilitar(id)
   }
 
+  const DisplayalertDelete = (id) => {
+    SweetAlert.fire({
+      title: "Estás seguro de eliminar el evento?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ok",
+      cancelButtonText: "cancelar",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.value) {
+        deleteEvent(id)
+        SweetAlert.fire("Usuario eliminado!");
+      } else {
+        SweetAlert.fire("No se realizaron los cambios!");
+      }
+    });
+  }
+
+  const deleteEvent = async (id) =>{
+    const userRef = doc(db, "events", id);
+    const user = {
+      isActive: false
+    };
+    try {
+      await updateDoc(userRef, user);
+      getEventos()
+    } catch (e) {
+      console.error("Error al eliminar Evento a Firestore:", e);
+    }
+  
+  }
+
   return (
     <Fragment>
     <Breadcrumbs parent="Listado Bebidas" title="Listado de Eventos" />
@@ -100,6 +130,8 @@ const Eventos = () => {
                     <th scope="col" style={{color: 'black'}}>Fecha del Evento</th>
                     <th scope="col" style={{color: 'black'}}>Estado del evento</th>
                     <th scope="col" style={{color: 'black'}}>Habilitación</th>
+                    <th scope="col" style={{color: 'black'}}>Editar</th>
+                    <th scope="col" style={{color: 'black'}}>Eliminar</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -132,12 +164,14 @@ const Eventos = () => {
                                           ? <Button color="primary" size="sm" onClick={() => Displayalert(i.id) }>
                                                 Deshabilitar
                                             </Button>
-                                          : <Button color="primary" size="sm" onClick={() => DisplayalertHablitar(i.id) }>
+                                          : <Button color="danger" size="sm" onClick={() => DisplayalertHablitar(i.id) }>
                                                 Habilitar
                                             </Button>
                                         }
                                          
                                       </td>
+                                      <td style={{color: 'black'}}> <i className={`fa fa-pencil`} onClick={() => toggle(i)}></i></td>
+                                      <td style={{color: 'black'}}> <i className={`fa fa-trash-o`} onClick={() => DisplayalertDelete(i.id)}></i></td>
                                   </tr>)
                     
                     })
@@ -152,7 +186,7 @@ const Eventos = () => {
         </Col>
       </Row>
     </Container>
-    <ModalEventos modal={modal} toggle={toggle} evento={eventos}></ModalEventos>
+    <ModalEventos modal={modal} toggle={toggle} evento={eventos} getEvento={getEventos}></ModalEventos>
   </Fragment>
   )
 }
