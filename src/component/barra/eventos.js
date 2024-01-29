@@ -30,6 +30,7 @@ const Eventos = () => {
       list.push({
           id: doc.id,
           title: info.event,
+          slug: info.slug,
           date: info.date,
           active: info.isActive,
         });

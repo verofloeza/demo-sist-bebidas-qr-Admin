@@ -12,6 +12,7 @@ export const getEvents = () => {
         list.push({
             id: doc.id,
             event: info.event,
+            slug: info.slug,
             date: info.date,
             active: info.isActive
           });

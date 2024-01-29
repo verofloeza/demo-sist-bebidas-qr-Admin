@@ -15,6 +15,8 @@ export const getDrink = () => {
             description: info.description,
             price: info.price,
             image: info.image,
+            event: info.evento,
+            stock: info.stock,
             active: info.active
           });
       });

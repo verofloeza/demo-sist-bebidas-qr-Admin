@@ -6,8 +6,9 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/
 import Files from 'react-files';
 import { db } from "../../../data/firebase/firebase";
 import { getDrink } from "../../../redux/actions/drinks.actions";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from "react";
+import { getEvents } from "../../../redux/actions/events.actions";
 
 const ModalBebidas = ({modal, toggle, drinkId}) => {
   const dispatch = useDispatch();
@@ -18,7 +19,10 @@ const ModalBebidas = ({modal, toggle, drinkId}) => {
   const [ urlImage, setUrlImage ] = useState(null)
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState('');
-  const [ stock, setStock ] = useState(0)
+  const [ stock, setStock ] = useState(0);
+  const [ evento, setEvento ] = useState('');
+  const listEvents = useSelector(state => state.events.events);
+  const listDrinks = useSelector(state => state.drinks. drinks);
 
   useEffect(()=>{
     if(drinkId){
@@ -26,9 +30,10 @@ const ModalBebidas = ({modal, toggle, drinkId}) => {
       setDescription(drinkId.description)
       setPrice(drinkId.price)
       setUrlImage(drinkId.image)
+      setEvento(drinkId.event)
       setStock(drinkId.stock)
     }
-    
+    dispatch(getEvents())
   }, [drinkId])
 
   const addDrink = async () =>{
@@ -39,12 +44,13 @@ const ModalBebidas = ({modal, toggle, drinkId}) => {
           price: price,
           image: urlImage,
           stock: stock,
+          evento: evento,
           isActive: true
         };
   try {
     await addDoc(userRef, drink);
     dispatch(getDrink())
-    setear()
+    setear();
     toggle()
   } catch (e) {
     console.error("Error al agregar la bebida a Firestore:", e);
@@ -52,14 +58,15 @@ const ModalBebidas = ({modal, toggle, drinkId}) => {
     
 }
 
-const updateDrink = async () =>{
+const updateDrink = async () =>{ 
   const userRef = doc(db, "drinks", drinkId.id);
   const drink = {
     title: title,
     description: description,
     price: price,
     image: urlImage,
-    stock: stock
+    stock: stock,
+    evento: evento
   };
   try {
     await updateDoc(userRef, drink);
@@ -78,6 +85,7 @@ const updateDrink = async () =>{
     setPrice('');
     setImage([]);
     setUrlImage('');
+    setEvento('');
     setStock(0);
   }
 
@@ -105,6 +113,7 @@ const updateDrink = async () =>{
             case 'running':
                 console.log('Upload is running');
                 break;
+            default :;
                 
             }
         },
@@ -126,6 +135,21 @@ const updateDrink = async () =>{
     setImage(file)
   }
 
+  const formatFirebaseTimestamp = (timestamp) => {
+    if(timestamp){
+      const dateObj = new Date(timestamp.seconds * 1000);
+      const year = dateObj.getFullYear();
+      const month = `0${dateObj.getMonth() + 1}`.slice(-2);
+      const day = `0${dateObj.getDate()}`.slice(-2);
+      const hours = `0${dateObj.getHours()}`.slice(-2);
+      const minutes = `0${dateObj.getMinutes()}`.slice(-2);
+      
+      return `${day}-${month}-${year} ${hours}:${minutes}`;
+    }else{
+      return '';
+    }
+    
+  };
   return (
     <Modal isOpen={modal} toggle={toggle}>
       <ModalHeader toggle={toggle}>Bebidas</ModalHeader>
@@ -185,6 +209,30 @@ const updateDrink = async () =>{
                           value={stock}
                           onChange={(e)=> setStock(e.target.value)}
                         />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <Label className="form-label">Evento</Label>
+                        <Input
+                          type="select"
+                          name="select"
+                          className="form-control input-air-primary digits"
+                          value={evento}
+                          onChange={(e)=> setEvento(e.target.value)}
+                        >
+                          <option>Evento</option>
+                          {
+                          listEvents.length > 0 
+                          
+                            ? listEvents.map( (i, index) =>
+                              <option value={i.event} key={index}>{i.event} - {formatFirebaseTimestamp(i.date)}</option>
+                            )
+                            : <option></option>
+                          }
+                        </Input>
                       </FormGroup>
                     </Col>
                   </Row>
