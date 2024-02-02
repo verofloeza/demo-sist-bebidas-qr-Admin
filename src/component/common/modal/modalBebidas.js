@@ -14,36 +14,29 @@ const ModalBebidas = ({modal, toggle, drinkId}) => {
   const dispatch = useDispatch();
   const [ title, setTitle ] = useState('');
   const [ description, setDescription ] = useState('');
-  const [ price, setPrice ] = useState('');
   const [ image, setImage ] = useState([]);
   const [ urlImage, setUrlImage ] = useState(null)
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState('');
-  const [ stock, setStock ] = useState(0);
   const [ evento, setEvento ] = useState('');
   const listEvents = useSelector(state => state.events.events);
-  const listDrinks = useSelector(state => state.drinks. drinks);
 
   useEffect(()=>{
     if(drinkId){
       setTitle(drinkId.title)
       setDescription(drinkId.description)
-      setPrice(drinkId.price)
       setUrlImage(drinkId.image)
       setEvento(drinkId.event)
-      setStock(drinkId.stock)
     }
     dispatch(getEvents())
-  }, [drinkId])
+  }, [drinkId, dispatch])
 
   const addDrink = async () =>{
     const userRef = collection(db, "drinks");
     const drink = {
           title: title,
           description: description,
-          price: price,
           image: urlImage,
-          stock: stock,
           evento: evento,
           isActive: true
         };
@@ -63,9 +56,7 @@ const updateDrink = async () =>{
   const drink = {
     title: title,
     description: description,
-    price: price,
     image: urlImage,
-    stock: stock,
     evento: evento
   };
   try {
@@ -82,11 +73,9 @@ const updateDrink = async () =>{
   const setear = ()=>{
     setTitle('');
     setDescription('');
-    setPrice('');
     setImage([]);
     setUrlImage('');
     setEvento('');
-    setStock(0);
   }
 
   //Image
@@ -180,34 +169,6 @@ const updateDrink = async () =>{
                           placeholder="Descripción"
                           value={description}
                           onChange={(e)=> setDescription(e.target.value)}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <FormGroup>
-                        <Label className="form-label">Precio</Label>
-                        <Input
-                          className="form-control input-air-primary"
-                          type="text"
-                          placeholder="Precio"
-                          value={price}
-                          onChange={(e)=> setPrice(e.target.value)}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <FormGroup>
-                        <Label className="form-label">Stock</Label>
-                        <Input
-                          className="form-control input-air-primary"
-                          type="text"
-                          placeholder="Stock"
-                          value={stock}
-                          onChange={(e)=> setStock(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
