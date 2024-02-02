@@ -129,8 +129,7 @@ const Usuarios = () => {
                       <th scope="col" style={{color: 'black'}}>Email</th>
                       <th scope="col" style={{color: 'black'}}>Rol</th>
                       <th scope="col" style={{color: 'black'}}>Evento</th>
-                      <th scope="col" style={{color: 'black'}}>Editar</th>
-                      <th scope="col" style={{color: 'black'}}>Eliminar</th>
+                      <th scope="col" style={{color: 'black'}}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -146,8 +145,7 @@ const Usuarios = () => {
                           <td style={{color: 'black'}}>{i.email}</td>
                           <td style={{color: 'black'}}>{i.role}</td>
                           {renderEventCells(i)}
-                          <td style={{color: 'black'}}> <i className={`fa fa-pencil`} onClick={() => toggle(i)}></i></td>
-                          <td style={{color: 'black'}}> <i className={`fa fa-trash-o`} onClick={() => Displayalert(i.email)}></i></td>
+                          <td style={{color: 'black'}}> <i className={`fa fa-pencil`} onClick={() => toggle(i)}></i> <i className={`fa fa-trash-o`} onClick={() => Displayalert(i.email)}></i></td>
                         </tr>
                         )
                       

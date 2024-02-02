@@ -26,7 +26,7 @@ const ModalForms = ({modal, toggle, userId}) => {
       setEvento(userId.event)
     }
     dispatch(getEvents())
-  }, [userId])
+  }, [userId, dispatch])
 
   const addUser = async () =>{
     const userRef = doc(db, "Users", email);

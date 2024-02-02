@@ -118,30 +118,30 @@ const BarraList = () => {
           console.error("Error al agregar usuario a Firestore:", e);
         }
       }
-      const renderEventCells = (user) => {
-        if (user.event) {
-          const matchingEvents = listEvents.filter((event) => event.event === user.event);
-          return matchingEvents.map((event, index) => (
-            <td key={index} style={{ color: 'black' }}>{event.event} {formatFirebaseTimestamp(event.date)}</td>
-          ));
-        } else {
-          return <td style={{ color: 'black' }}></td>;
-        }
-      };
-      const formatFirebaseTimestamp = (timestamp) => {
-        if(timestamp){
-          const dateObj = new Date(timestamp.seconds * 1000);
-          const year = dateObj.getFullYear();
-          const month = `0${dateObj.getMonth() + 1}`.slice(-2);
-          const day = `0${dateObj.getDate()}`.slice(-2);
-          const hours = `0${dateObj.getHours()}`.slice(-2);
-          const minutes = `0${dateObj.getMinutes()}`.slice(-2);
+      // const renderEventCells = (user) => {
+      //   if (user.event) {
+      //     const matchingEvents = listEvents.filter((event) => event.event === user.event);
+      //     return matchingEvents.map((event, index) => (
+      //       <td key={index} style={{ color: 'black' }}>{event.event} {formatFirebaseTimestamp(event.date)}</td>
+      //     ));
+      //   } else {
+      //     return <td style={{ color: 'black' }}></td>;
+      //   }
+      // };
+      // const formatFirebaseTimestamp = (timestamp) => {
+      //   if(timestamp){
+      //     const dateObj = new Date(timestamp.seconds * 1000);
+      //     const year = dateObj.getFullYear();
+      //     const month = `0${dateObj.getMonth() + 1}`.slice(-2);
+      //     const day = `0${dateObj.getDate()}`.slice(-2);
+      //     const hours = `0${dateObj.getHours()}`.slice(-2);
+      //     const minutes = `0${dateObj.getMinutes()}`.slice(-2);
           
-          return `${day}-${month}-${year} ${hours}:${minutes}`;
-        }else{
-          return '';
-        }
-      }
+      //     return `${day}-${month}-${year} ${hours}:${minutes}`;
+      //   }else{
+      //     return '';
+      //   }
+      // }
   return (
     <Fragment>
       <Breadcrumbs parent="Listado Bebidas" title="Listado de Bebidas" />
@@ -159,11 +159,13 @@ const BarraList = () => {
                       <th scope='col' style={{color: 'black'}}>#</th>
                       <th scope="col" style={{color: 'black'}}>Imagen</th>
                       <th scope="col" style={{color: 'black'}}>Título</th>
-                      <th scope="col" style={{color: 'black'}}>Evento</th>
-                      <th scope="col" style={{color: 'black'}}>Precio</th>
-                      <th scope="col" style={{color: 'black'}}>Editar</th>
-                      <th scope="col" style={{color: 'black'}}>Eliminar</th>
+                      <th scope="col" style={{color: 'black'}}>Descripción</th>
+                      {/* <th scope="col" style={{color: 'black'}}>Evento</th>
+                      <th scope="col" style={{color: 'black'}}>Precio</th> */}
+                      {/* <th scope="col" style={{color: 'black'}}>Editar</th>
+                      <th scope="col" style={{color: 'black'}}>Eliminar</th> */}
                       <th scope="col" style={{color: 'black'}}>Deshabilitar</th>
+                      <th scope="col" style={{color: 'black'}}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -175,10 +177,11 @@ const BarraList = () => {
                           <td style={{color: 'black'}}>{index}</td>
                           <td><img className='files-gallery-item img-fluid' alt="img" src={i.image} width={80} /></td>
                           <td style={{color: 'black'}}>{i.title}</td>
-                          {renderEventCells(i)}
-                          <td style={{color: 'black'}}>{i.price}</td>
-                          <td style={{color: 'black'}}> <i className={`fa fa-pencil`} onClick={() => toggle(i)}></i></td>
-                          <td style={{color: 'black'}}> <i className={`fa fa-trash-o`} onClick={() => Displayalert(i.id)}></i></td>
+                          <td style={{color: 'black'}}>{i.description}</td>
+                          {/* {renderEventCells(i)}
+                          <td style={{color: 'black'}}>{i.price}</td> */}
+                          {/* <td style={{color: 'black'}}> <i className={`fa fa-pencil`} onClick={() => toggle(i)}></i></td>
+                          <td style={{color: 'black'}}> <i className={`fa fa-trash-o`} onClick={() => Displayalert(i.id)}></i></td> */}
                           <td>
                             {
                               i.active 
@@ -191,6 +194,7 @@ const BarraList = () => {
                             }
                             
                           </td>
+                          <td style={{color: 'black'}}> <i className={`fa fa-pencil`} onClick={() => toggle(i)}></i> <i className={`fa fa-trash-o`} onClick={() => Displayalert(i.id)}></i></td>
                         </tr>
                         )
                       

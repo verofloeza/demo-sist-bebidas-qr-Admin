@@ -9,12 +9,15 @@ export const getEvents = () => {
       const querySnapshot = await getDocs(query(collection(db, "events"), where("isActive", "==", true)));
       querySnapshot.forEach((doc) => {
         let info = doc.data();
+        let drinksList = info.drinks !== undefined ? info.drinks : [];
         list.push({
             id: doc.id,
             event: info.event,
             slug: info.slug,
             date: info.date,
-            active: info.isActive
+            drinks: drinksList,
+            active: info.active,
+            isActive: info.isActive
           });
       });
 

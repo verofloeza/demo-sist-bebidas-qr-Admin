@@ -1,20 +1,25 @@
 import { Button, Card, CardHeader, Col, Container, Row, Table } from 'reactstrap'
 import React, { Fragment, useEffect, useState } from 'react'
-import { collection, doc, getDocs, query, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 
 import Breadcrumbs from '../common/breadcrumb/breadcrumb';
 import SweetAlert from "sweetalert2";
 import { db } from '../../data/firebase/firebase';
 import ModalEventos from '../common/modal/modalEventos';
+import { getEvents } from "../../redux/actions/events.actions";
+import { useDispatch, useSelector } from 'react-redux';
+import ModalEvBeb from '../common/modal/modalEvBeb';
 
 const Eventos = () => {
+  const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
+  const [modalBebidas, setModalBebidas] = useState(false);
   const [ eventos, setEventos ] = useState([]);
+  const listEvents = useSelector(state => state.events.events);
 
   useEffect(() =>{
-   
-    getEventos()
-  }, [])
+   dispatch(getEvents())
+  }, [dispatch])
 
   const toggle = (eventos) => {
     setModal(!modal);
@@ -22,31 +27,19 @@ const Eventos = () => {
     
   }
 
-  const getEventos = async () => {
-    const list = [];
-    const querySnapshot = await getDocs(query(collection(db, "events")));
-    querySnapshot.forEach((doc) => {
-      let info = doc.data();
-      list.push({
-          id: doc.id,
-          title: info.event,
-          slug: info.slug,
-          date: info.date,
-          active: info.isActive,
-        });
-      
-    });
-    setEventos(list)
+  const toggleBebidas = (eventos) => {
+    setModalBebidas(!modalBebidas)
+    if(eventos) {setEventos(eventos)};
   }
 
   const deshabilitar = async (id) => {
     const userRef = doc(db, "events", id);
     const user = {
-      isActive: false
+      active: false
     };
     try {
       await updateDoc(userRef, user);
-      getEventos()
+      getEvents()
     } catch (e) {
       console.error("Error al camnbiar el estado a Firestore:", e);
     }
@@ -55,11 +48,11 @@ const Eventos = () => {
   const habilitar = async (id) => {
     const userRef = doc(db, "events", id);
     const user = {
-      isActive: true
+      active: true
     };
     try {
       await updateDoc(userRef, user);
-      await getEventos()
+      await getEvents()
     } catch (e) {
       console.error("Error al camnbiar el estado a Firestore:", e);
     }
@@ -93,7 +86,7 @@ const Eventos = () => {
     }).then((result) => {
       if (result.value) {
         deleteEvent(id)
-        SweetAlert.fire("Usuario eliminado!");
+        SweetAlert.fire("Evento eliminado!");
       } else {
         SweetAlert.fire("No se realizaron los cambios!");
       }
@@ -107,7 +100,7 @@ const Eventos = () => {
     };
     try {
       await updateDoc(userRef, user);
-      getEventos()
+      getEvents()
     } catch (e) {
       console.error("Error al eliminar Evento a Firestore:", e);
     }
@@ -145,35 +138,20 @@ const Eventos = () => {
                   <tr>
                     <th scope='col' style={{color: 'black'}}>Evento</th>
                     <th scope="col" style={{color: 'black'}}>Fecha del Evento</th>
-                    <th scope="col" style={{color: 'black'}}>Estado del evento</th>
                     <th scope="col" style={{color: 'black'}}>Habilitación</th>
-                    <th scope="col" style={{color: 'black'}}>Editar</th>
-                    <th scope="col" style={{color: 'black'}}>Eliminar</th>
+                    <th scope="col" style={{color: 'black'}}>Bebidas</th>
+                    <th scope="col" style={{color: 'black'}}>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   {
-                    eventos.length > 0  
-                    ? eventos.map((i) =>{
+                    listEvents.length > 0  
+                    ? listEvents.map((i) =>{
                           
 
                           return  (<tr>
-                                      <td style={{color: 'black'}}>{i.title}</td>
+                                      <td style={{color: 'black'}}>{i.event}</td>
                                       <td style={{color: 'black'}}>{formatFirebaseTimestamp(i.date)}</td>
-                                      <td style={{color: 'black'}}> 
-                                        {
-                                          i.active === true 
-                                          ? <div className="order-process">
-                                              <span className="order-process-circle shipped-order"></span>{" "}
-                                                Activo
-                                            </div> 
-                                          : <div className="order-process">
-                                              <span className="order-process-circle cancel-order"></span>{" "}
-                                              Inactivo
-                                            </div>
-                                        }
-                                        
-                                      </td>
                                       <td>
                                         {
                                           i.active === true
@@ -186,8 +164,16 @@ const Eventos = () => {
                                         }
                                          
                                       </td>
-                                      <td style={{color: 'black'}}> <i className={`fa fa-pencil`} onClick={() => toggle(i)}></i></td>
-                                      <td style={{color: 'black'}}> <i className={`fa fa-trash-o`} onClick={() => DisplayalertDelete(i.id)}></i></td>
+                                      <td>
+                                        <Button color="primary" size="sm" onClick={() => toggleBebidas(i) }>
+                                                Agregar
+                                            </Button>
+                                          
+                                      </td>
+                                      <td style={{color: 'black'}}> 
+                                        <i className={`fa fa-pencil`} onClick={() => toggle(i)}></i> 
+                                        <i className={`fa fa-trash-o`} onClick={() => DisplayalertDelete(i.id)}></i>
+                                      </td>
                                   </tr>)
                     
                     })
@@ -202,7 +188,8 @@ const Eventos = () => {
         </Col>
       </Row>
     </Container>
-    <ModalEventos modal={modal} toggle={toggle} evento={eventos} getEvento={getEventos}></ModalEventos>
+    <ModalEventos modal={modal} toggle={toggle} evento={eventos} getEvento={getEvents}></ModalEventos>
+    <ModalEvBeb modalBebidas={modalBebidas} toggleBebidas={toggleBebidas} evento={eventos}></ModalEvBeb>
   </Fragment>
   )
 }
