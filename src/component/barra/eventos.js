@@ -155,10 +155,10 @@ const Eventos = () => {
                                       <td>
                                         {
                                           i.active === true
-                                          ? <Button color="primary" size="sm" onClick={() => Displayalert(i.id) }>
+                                          ? <Button color="primary" size="sm" onClick={() => DisplayalertHablitar(i.id) }>
                                                 Deshabilitar
                                             </Button>
-                                          : <Button color="danger" size="sm" onClick={() => DisplayalertHablitar(i.id) }>
+                                          : <Button color="danger" size="sm" onClick={() => Displayalert(i.id) }>
                                                 Habilitar
                                             </Button>
                                         }
